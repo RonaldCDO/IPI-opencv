@@ -19,7 +19,6 @@ def dec_int(input_im):
 
     cv.imshow('Decimated Reduction', decreased_im)
     cv.waitKey(0)
-    cv.destroyAllWindows()
     cv.imshow('Decimated Interpolation', increased_im)
     cv.waitKey(0)
     cv.destroyAllWindows()
@@ -122,7 +121,6 @@ def edge_improv(input_im, imp_type):
 
     if not is_gray(input_im):
         r, g, b = cv.split(input_im)
-        r2, g2, b2 = cv.split(input_im)
 
         r_filtered = cv.filter2D(r, -1, kernel)
         g_filtered = cv.filter2D(g, -1, kernel)
@@ -180,14 +178,19 @@ def cv_interpolation(input_im):
     decreased_im = bicubic_decrease(input_im)
     increased_im = bicubic_increase(decreased_im)
 
-    cv.imshow('Bicubic Reduction', decreased_im)
-    cv.waitKey(0)
-    cv.destroyAllWindows()
-    cv.imshow('Bicubic Interpolation', increased_im)
-    cv.waitKey(0)
-    cv.destroyAllWindows()
-    cv.waitKey(0)
-    cv.destroyAllWindows()
+    # cv.imshow('Bicubic Reduction', decreased_im)
+    # cv.waitKey(0)
+    # cv.imshow('Bicubic Interpolation', increased_im)
+    # cv.waitKey(0)
+    # cv.destroyAllWindows()
+    return decreased_im
+
+
+def cv_interpolation_2(input_im):
+    decreased_im = bicubic_decrease(input_im)
+    increased_im = bicubic_increase(decreased_im)
+
+    return increased_im
 
 
 def gamma_correction(input_im, gamma):
@@ -212,6 +215,20 @@ def histogram_equalization(input_im):
     cv.imshow('Histogram Equalization', histogram_equalized_im)
     cv.waitKey(0)
     cv.destroyAllWindows()
+
+
+def histogram_equalization2(input_im):
+    if not is_gray(input_im):
+        r, g, b = cv.split(input_im)
+        r1 = cv.equalizeHist(r)
+        g1 = cv.equalizeHist(g)
+        b1 = cv.equalizeHist(b)
+
+        histogram_equalized_im = np.dstack((r1, g1, b1))
+    else:
+        histogram_equalized_im = cv.equalizeHist(input_im)
+
+    return histogram_equalized_im
 
 
 def histogram_plot(input_im):
@@ -261,7 +278,7 @@ def gaussian_smoothing(input_im, size, sigma):
 
     cv.imshow(f'Smooth image - Sigma: {sigma} - gaussian_size: {size}x{size}', smooth_image)
     cv.waitKey(0)
-    cv.destroyAllWindows()
+    # cv.destroyWindow(smooth_image)
     return smooth_image
 
 
@@ -269,11 +286,13 @@ def Prog1():
     im = cv.imread('test80.jpg')
     cv.imshow('Original', im)
     cv.waitKey(0)
-    cv.destroyAllWindows()
-    cv_interpolation(im)
+    # cv.destroyAllWindows()
     dec_int(im)
-    average_improv(im, 5)
-    edge_improv(im, 1)
+    im_2 = cv_interpolation(im)
+    im_3 = cv_interpolation_2(im)
+    # average_improv(im, 5)
+    edge_improv(im_2, 1)
+    edge_improv(im_3, 1)
 
 
 def Prog2():
@@ -282,7 +301,7 @@ def Prog2():
     im3 = cv.imread('university.png', 0)
     cv.imshow('Original', im1)
     cv.waitKey(0)
-    cv.destroyAllWindows()
+    # cv.destroyAllWindows()
     gamma_correction(im1, 1.5)
     gamma_correction(im1, 3.0)
     gamma_correction(im1, 6.0)
@@ -290,11 +309,14 @@ def Prog2():
     gamma_correction(im1, 0.5)
     gamma_correction(im1, 0.25)
     histogram_equalization(im1)
+    im1_1 = histogram_equalization2(im1)
     histogram_plot(im1)
+    histogram_plot(im1_1)
+    im_calculate_CDF(im1)
+    im_calculate_CDF(im1_1)
 
     cv.imshow('Original', im2)
     cv.waitKey(0)
-    cv.destroyAllWindows()
     gamma_correction(im2, 1.5)
     gamma_correction(im2, 3.0)
     gamma_correction(im2, 6.0)
@@ -302,11 +324,9 @@ def Prog2():
     gamma_correction(im2, 0.5)
     gamma_correction(im2, 0.25)
     histogram_equalization(im2)
-    histogram_plot(im2)
 
     cv.imshow('Original', im3)
     cv.waitKey(0)
-    cv.destroyAllWindows()
     gamma_correction(im3, 1.5)
     gamma_correction(im3, 3.0)
     gamma_correction(im3, 6.0)
@@ -314,30 +334,28 @@ def Prog2():
     gamma_correction(im3, 0.5)
     gamma_correction(im3, 0.25)
     histogram_equalization(im3)
-    histogram_plot(im3)
-
-    im_calculate_CDF(im1)
 
 
 def Prog3():
     im = cv.imread('Image1.pgm')
     cv.imshow('Original', im)
     cv.waitKey(0)
-    cv.destroyAllWindows()
-    edge_improv(im, 1)
+    edge_improv(im, 2)
     smooth_image = gaussian_smoothing(im, 3, 0.5)
     edge_improv(smooth_image, 1)
     smooth_image2 = gaussian_smoothing(im, 3, 1.0)
     edge_improv(smooth_image2, 1)
+    cv.destroyAllWindows()
 
 
 def Menu():
     root = tk.Tk()
     frame = tk.Frame(root)
     frame.pack()
+    root.title("IIP Program")
 
     button_1 = tk.Button(frame,
-                         text="Prog1",
+                         text="Question 1",
                          height=2,
                          width=10,
                          fg="blue",
@@ -346,7 +364,7 @@ def Menu():
     button_1.pack(side=tk.LEFT)
 
     button_2 = tk.Button(frame,
-                         text="Prog2",
+                         text="Question 2",
                          height=2,
                          width=10,
                          fg="green",
@@ -355,7 +373,7 @@ def Menu():
     button_2.pack(expand=10)
 
     button_2 = tk.Button(frame,
-                         text="Prog3",
+                         text="Question 3",
                          height=2,
                          width=10,
                          fg="purple",
@@ -371,8 +389,9 @@ def Menu():
                          command=quit)
     button_3.pack(side=tk.RIGHT)
     button_3.pack(expand=10)
-
+    
     root.mainloop()
 
 
 Menu()
+

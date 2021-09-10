@@ -1,0 +1,4 @@
+opencv-python>=3.0
+numpy>=1.0
+matplotlib>=3.0
+tk==0.1.0
